@@ -17,7 +17,7 @@ pub fn main() anyerror!void {
     const screenHeight = 450;
 
     var colorPickerColor = rl.Color.red;
-    var pixels = std.mem.zeroes([gui.gridWidth][gui.gridHeight]rl.Color);
+    var pixels = std.mem.zeroes([gui.gridWidth * gui.gridHeight]rl.Color);
 
     rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.closeWindow();

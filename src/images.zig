@@ -3,7 +3,7 @@ const rl = @import("raylib");
 const zigimg = @import("zigimg");
 const GeneralPurposeAllocator = @import("std").heap.GeneralPurposeAllocator;
 
-pub fn saveImage(pixels: *[gui.gridWidth][gui.gridHeight]rl.Color) !void {
+pub fn saveImage(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color) !void {
     var gpa = GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
 
@@ -15,8 +15,8 @@ pub fn saveImage(pixels: *[gui.gridWidth][gui.gridHeight]rl.Color) !void {
         .rgba32 => |data| {
             for (0..gui.gridHeight) |y| {
                 for (0..gui.gridWidth) |x| {
-                    const pixel = pixels[x][y];
                     const index = y * gui.gridWidth + x;
+                    const pixel = pixels[index];
                     data[index] = zigimg.color.Rgba32.initRgba(pixel.r, pixel.g, pixel.b, pixel.a);
                 }
             }

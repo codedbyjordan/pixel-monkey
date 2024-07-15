@@ -8,7 +8,7 @@ pub fn isInGrid(cell: *rl.Vector2) bool {
     return cell.*.x > -1 and cell.*.y > -1 and cell.*.x < @as(f32, @floatFromInt(gui.gridWidth)) and cell.*.y < @as(f32, @floatFromInt(gui.gridHeight));
 }
 
-pub fn updatePixels(pixels: *[gui.gridWidth][gui.gridHeight]rl.Color, start: *rl.Vector2, color: rl.Color, brushSize: f32) void {
+pub fn updatePixels(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, start: *rl.Vector2, color: rl.Color, brushSize: f32) void {
     const brushSizeAsUsize: usize = @intFromFloat(brushSize);
     for (0..brushSizeAsUsize) |i| {
         for (0..brushSizeAsUsize) |j| {
@@ -18,20 +18,20 @@ pub fn updatePixels(pixels: *[gui.gridWidth][gui.gridHeight]rl.Color, start: *rl
             var cellVector = rl.Vector2.init(@floatFromInt(pixelsX), @floatFromInt(pixelsY));
 
             if (isInGrid(&cellVector)) {
-                pixels[pixelsX][pixelsY] = color;
+                pixels[pixelsY * gui.gridWidth + pixelsX] = color;
             }
         }
     }
 }
 
-pub fn drawAllPixels(pixels: *[gui.gridWidth][gui.gridHeight]rl.Color, pixelSize: i32) void {
-    for (0..pixels.*[0].len) |i| {
-        for (0..pixels[1].len) |j| {
-            const iAsInt: i32 = @intCast(i);
-            const jAsInt: i32 = @intCast(j);
+pub fn drawAllPixels(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, pixelSize: i32) void {
+    for (0..gui.gridWidth) |i| {
+        for (0..gui.gridHeight) |j| {
+            const x: i32 = @intCast(i);
+            const y: i32 = @intCast(j);
 
-            if (!std.meta.eql(pixels[i][j], emptyColor)) {
-                rl.drawRectangle(iAsInt * pixelSize + gui.gridOffsetX + 1, jAsInt * pixelSize + gui.gridOffsetY + 1, pixelSize - 1, pixelSize - 1, pixels[i][j]);
+            if (!std.meta.eql(pixels[j * gui.gridWidth + i], emptyColor)) {
+                rl.drawRectangle(x * pixelSize + gui.gridOffsetX + 1, y * pixelSize + gui.gridOffsetY + 1, pixelSize - 1, pixelSize - 1, pixels[j * gui.gridWidth + i]);
             }
         }
     }
