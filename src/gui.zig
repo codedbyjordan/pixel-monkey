@@ -34,7 +34,7 @@ pub fn drawColorPicker(color: *rl.Color, screenHeight: i32) void {
     _ = rg.guiColorPicker(colorPickerRect, "Select color", color);
 }
 
-pub fn drawToolbar(pixels: *[gridWidth][gridHeight]rl.Color) !void {
+pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
     if (rg.guiButton(rl.Rectangle.init(12, 60, 50, 20), "Save") == 1) {
         try images.saveImage(pixels);
     }
