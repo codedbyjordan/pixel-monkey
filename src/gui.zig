@@ -1,7 +1,7 @@
 const rg = @import("raygui");
 const rl = @import("raylib");
 const images = @import("images.zig");
-const openFileDialog = @import("file-dialog.zig").openFileDialog;
+const openSaveDialog = @import("file-dialog.zig").openSaveDialog;
 const std = @import("std");
 
 pub const gridWidth: usize = 32;
@@ -57,7 +57,7 @@ pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
     const toolbarY = 4;
 
     if (drawIconButton(rg.GuiIconName.icon_file_save, 1, toolbarX, toolbarY, rl.Color.black) == 1) {
-        const result = try openFileDialog("png", null);
+        const result = try openSaveDialog("png", null);
         if (result) |path| {
             try images.saveImage(pixels, path);
         }

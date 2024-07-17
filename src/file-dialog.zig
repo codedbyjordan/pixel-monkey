@@ -5,7 +5,7 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
-pub fn openFileDialog(filter: ?[:0]const u8, default_path: ?[:0]const u8) !?[:0]const u8 {
+pub fn openSaveDialog(filter: ?[:0]const u8, default_path: ?[:0]const u8) !?[:0]const u8 {
     var out_path: [*c]u8 = null;
 
     const result = c.NFD_SaveDialog(if (filter != null) filter.? else null, if (default_path != null) default_path.? else null, &out_path);
