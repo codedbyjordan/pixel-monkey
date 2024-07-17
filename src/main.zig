@@ -13,8 +13,8 @@ const emptyColor = rl.Color.init(0, 0, 0, 0);
 var mouseCell = rl.Vector2.init(0, 0);
 
 pub fn main() anyerror!void {
-    const screenWidth = 800;
-    const screenHeight = 450;
+    var screenWidth: i32 = 800;
+    var screenHeight: i32 = 450;
 
     var colorPickerColor = rl.Color.red;
     var pixels: [gui.gridWidth * gui.gridHeight]rl.Color = undefined;
@@ -33,6 +33,9 @@ pub fn main() anyerror!void {
         rl.beginDrawing();
         defer rl.endDrawing();
         rl.clearBackground(rl.Color.black);
+
+        screenWidth = rl.getScreenWidth();
+        screenHeight = rl.getScreenHeight();
 
         if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and editor.isInGrid(&mouseCell)) {
             editor.updatePixels(&pixels, &mouseCell, colorPickerColor, brushSize);
