@@ -1,6 +1,8 @@
 const rg = @import("raygui");
 const rl = @import("raylib");
 const images = @import("images.zig");
+const openFileDialog = @import("file-dialog.zig").openFileDialog;
+const std = @import("std");
 
 pub const gridWidth: usize = 32;
 pub const gridHeight: usize = 32;
@@ -9,12 +11,7 @@ pub const gridOffsetX: i32 = 300;
 pub const gridOffsetY: i32 = 10;
 
 pub fn drawContainer(screenHeight: i32) void {
-    _ = rg.guiPanel(rl.Rectangle{
-        .x = 0,
-        .y = 0,
-        .width = 250,
-        .height = @floatFromInt(screenHeight),
-    }, "");
+    _ = rl.drawRectangle(0, 0, 250, screenHeight, rl.Color.white);
 }
 
 pub fn drawGrid(pixelSize: i32, mouseCell: *rl.Vector2) void {
@@ -36,7 +33,11 @@ pub fn drawColorPicker(color: *rl.Color, screenHeight: i32) void {
 
 pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
     if (rg.guiButton(rl.Rectangle.init(12, 60, 50, 20), "Save") == 1) {
-        try images.saveImage(pixels);
+        const result = try openFileDialog("png", null);
+
+        if (result) |path| {
+            try images.saveImage(pixels, path);
+        }
     }
 }
 

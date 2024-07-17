@@ -3,7 +3,7 @@ const rl = @import("raylib");
 const zigimg = @import("zigimg");
 const GeneralPurposeAllocator = @import("std").heap.GeneralPurposeAllocator;
 
-pub fn saveImage(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color) !void {
+pub fn saveImage(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, filePath: []const u8) !void {
     var gpa = GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
 
@@ -24,5 +24,5 @@ pub fn saveImage(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color) !void {
         else => return error.UnsupportedPixelFormat,
     }
     const png_encoder_options = zigimg.png.PNG.EncoderOptions{};
-    try image.writeToFilePath("test1.png", .{ .png = png_encoder_options });
+    try image.writeToFilePath(filePath, .{ .png = png_encoder_options });
 }

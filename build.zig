@@ -44,6 +44,22 @@ pub fn build(b: *std.Build) !void {
     exe.root_module.addImport("raygui", raygui);
     exe.root_module.addImport("zigimg", zigimg_dep.module("zigimg"));
 
+    const CFlags = &[_][]const u8{"-std=c99"};
+
+    exe.addCSourceFile(.{
+        .file = b.path("libs/nativefiledialog/src/nfd_common.c"),
+        .flags = CFlags,
+    });
+    exe.addCSourceFile(.{
+        .file = b.path("libs/nativefiledialog/src/nfd_gtk.c"),
+        .flags = CFlags,
+    });
+
+    exe.addIncludePath(b.path("libs/nativefiledialog/src/include"));
+
+    exe.linkLibC();
+    exe.linkSystemLibrary("gtk+-3.0");
+
     const run_cmd = b.addRunArtifact(exe);
     const run_step = b.step("run", "Run pixel-monkey");
     run_step.dependOn(&run_cmd.step);
