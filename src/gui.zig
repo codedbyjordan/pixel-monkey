@@ -31,10 +31,33 @@ pub fn drawColorPicker(color: *rl.Color, screenHeight: i32) void {
     _ = rg.guiColorPicker(colorPickerRect, "Select color", color);
 }
 
-pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
-    if (rg.guiButton(rl.Rectangle.init(12, 60, 50, 20), "Save") == 1) {
-        const result = try openFileDialog("png", null);
+fn drawIconButton(icon: rg.GuiIconName, pixelSize: i32, posX: i32, posY: i32, color: rl.Color) i32 {
+    const iconId: i32 = @intCast(@intFromEnum((icon)));
 
+    const mousePos = rl.getMousePosition();
+
+    const floatPosX: f32 = @floatFromInt(posX);
+    const floatPosY: f32 = @floatFromInt(posY);
+    const floatSize: f32 = @floatFromInt(pixelSize);
+
+    const inIconBounds = mousePos.x >= floatPosX and mousePos.y >= floatPosY and mousePos.x <= floatPosX + floatSize * 16 and mousePos.y <= floatPosY + floatSize * 16;
+
+    const iconColor = if (inIconBounds) rl.Color.gray else color;
+
+    _ = rg.guiDrawIcon(iconId, posX, posY, pixelSize, iconColor);
+
+    if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and inIconBounds) {
+        return 1;
+    }
+    return 0;
+}
+
+pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
+    const toolbarX = 8;
+    const toolbarY = 4;
+
+    if (drawIconButton(rg.GuiIconName.icon_file_save, 1, toolbarX, toolbarY, rl.Color.black) == 1) {
+        const result = try openFileDialog("png", null);
         if (result) |path| {
             try images.saveImage(pixels, path);
         }
@@ -44,10 +67,11 @@ pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
 pub fn drawBrushSizeSlider(brushSize: *f32) void {
     const brushSizeRect = rl.Rectangle{
         .x = 12,
-        .y = 30,
+        .y = 50,
         .width = 100,
         .height = 10,
     };
 
+    rl.drawText("Brush size", 12, 38, 4, rl.Color.black);
     _ = rg.guiSlider(brushSizeRect, "1", "10", brushSize, 1, 10);
 }
