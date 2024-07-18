@@ -3,16 +3,14 @@ const rl = @import("raylib");
 const images = @import("images.zig");
 const openSaveDialog = @import("file-dialog.zig").openSaveDialog;
 const std = @import("std");
+const Color = @import("color.zig").Color;
+const mouse = @import("mouse.zig");
 
 pub const gridWidth: usize = 32;
 pub const gridHeight: usize = 32;
 
-pub const gridOffsetX: i32 = 300;
-pub const gridOffsetY: i32 = 10;
-
-pub fn drawContainer(screenHeight: i32) void {
-    _ = rl.drawRectangle(0, 0, 250, screenHeight, rl.Color.white);
-}
+pub const gridOffsetX: i32 = 250;
+pub const gridOffsetY: i32 = 48;
 
 pub fn drawGrid(pixelSize: i32, mouseCell: *rl.Vector2) void {
     const gwAsInt: i32 = @intCast(gridWidth);
@@ -52,14 +50,23 @@ fn drawIconButton(icon: rg.GuiIconName, pixelSize: i32, posX: i32, posY: i32, co
     return 0;
 }
 
-pub fn drawToolbar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
-    const toolbarX = 8;
-    const toolbarY = 4;
+var showFileDropdown = false;
 
-    if (drawIconButton(rg.GuiIconName.icon_file_save, 1, toolbarX, toolbarY, rl.Color.black) == 1) {
-        const result = try openSaveDialog("png", null);
-        if (result) |path| {
-            try images.saveImage(pixels, path);
+pub fn drawMenubar(pixels: *[gridWidth * gridHeight]rl.Color) !void {
+    rl.drawRectangle(0, 0, rl.getScreenWidth(), 32, Color.gray_400);
+    if (rg.guiButton(rl.Rectangle.init(0, 0, 64, 32), "File") == 1) {
+        showFileDropdown = !showFileDropdown;
+    }
+
+    if (showFileDropdown) {
+        const saveBtnRect = rl.Rectangle.init(0, 32 - 2, 72, 32);
+        if (mouse.isMouseClickOutOfBounds(saveBtnRect)) {
+            showFileDropdown = false;
+        } else if (rg.guiButton(saveBtnRect, "Save") == 1) {
+            const result = try openSaveDialog("png", null);
+            if (result) |path| {
+                try images.saveImage(pixels, path);
+            }
         }
     }
 }
@@ -72,6 +79,6 @@ pub fn drawBrushSizeSlider(brushSize: *f32) void {
         .height = 10,
     };
 
-    rl.drawText("Brush size", 12, 38, 4, rl.Color.black);
+    rl.drawText("Brush size", 12, 38, 4, rl.Color.white);
     _ = rg.guiSlider(brushSizeRect, "1", "10", brushSize, 1, 10);
 }

@@ -48,11 +48,9 @@ pub fn main() anyerror!void {
         }
 
         editor.drawAllPixels(&pixels, pixelSize);
-
-        gui.drawContainer(screenHeight);
         gui.drawBrushSizeSlider(&brushSize);
         gui.drawColorPicker(&colorPickerColor, screenHeight);
-        try gui.drawToolbar(&pixels);
+        try gui.drawMenubar(&pixels);
         gui.drawGrid(pixelSize, &mouseCell);
         rl.drawFPS(screenWidth - 100, 0);
     }
