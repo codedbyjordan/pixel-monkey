@@ -26,7 +26,8 @@ pub const Gui = struct {
     pub fn drawGrid(self: *Gui, mouseCell: *rl.Vector2, pixelSize: i32) void {
         const gwAsInt: i32 = @intCast(self.grid.width);
         const ghAsInt: i32 = @intCast(self.grid.height);
-        _ = rg.guiGrid(rl.Rectangle.init(self.grid.offsetX, self.grid.offsetY, @floatFromInt(gwAsInt * self.pixelSize), @floatFromInt(ghAsInt * pixelSize)), "Test", @floatFromInt(pixelSize), 1, mouseCell);
+        const rect = rl.Rectangle.init(@floatFromInt(self.grid.offsetX), @floatFromInt(self.grid.offsetY), @as(f32, @floatFromInt(gwAsInt * pixelSize)), @as(f32, @floatFromInt(ghAsInt * pixelSize)));
+        _ = rg.guiGrid(rect, "", @as(f32, @floatFromInt(pixelSize)), 1, mouseCell);
     }
 
     pub fn drawMenubar(self: *Gui, pixels: *[]rl.Color) !void {
@@ -42,7 +43,7 @@ pub const Gui = struct {
             } else if (rg.guiButton(saveBtnRect, "Save") == 1) {
                 const result = try openSaveDialog("png", null);
                 if (result) |path| {
-                    try images.saveImage(pixels, path);
+                    try images.saveImage(pixels, path, &self.grid);
                 }
             }
         }
@@ -61,7 +62,7 @@ pub const Gui = struct {
 
     pub fn drawBrushSizeInput(self: *Gui) void {
         const bounds = rl.Rectangle.init(52, 48, 64, 24);
-        _ = rg.guiValueBox(bounds, "Brush size", self.state.brushSize, 1, 10, self.state.isBrushInputFocused);
+        _ = rg.guiValueBox(bounds, "Brush size", &self.state.brushSize, 1, 10, self.state.isBrushInputFocused);
         if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left)) {
             if (mouse.isMouseClickInBounds(bounds)) {
                 self.state.isBrushInputFocused = true;

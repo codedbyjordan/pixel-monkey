@@ -54,6 +54,10 @@ pub fn main() anyerror!void {
             editor.drawCursor(&mouseCell, brushSize, pixelSize, &gui.grid);
         }
 
+        try gui.drawMenubar(&pixels);
+        gui.drawBrushSizeInput();
+        gui.drawGrid(&mouseCell, pixelSize);
+
         editor.drawAllPixels(&pixels, pixelSize, &gui.grid);
         rl.drawFPS(screenWidth - 100, 0);
     }
