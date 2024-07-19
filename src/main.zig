@@ -7,7 +7,7 @@ const editor = @import("editor.zig");
 
 const pixelSize: i32 = 12;
 
-var brushSize: f32 = 1;
+var brushSize: i32 = 1;
 
 const emptyColor = rl.Color.init(0, 0, 0, 0);
 var mouseCell = rl.Vector2.init(0, 0);
@@ -29,6 +29,8 @@ pub fn main() anyerror!void {
 
     rl.setTargetFPS(60);
 
+    var guiState = gui.GuiState{ .isBrushInputFocused = false, .showFileDropdown = false };
+
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
         defer rl.endDrawing();
@@ -48,9 +50,9 @@ pub fn main() anyerror!void {
         }
 
         editor.drawAllPixels(&pixels, pixelSize);
-        gui.drawBrushSizeSlider(&brushSize);
+        gui.drawBrushSizeInput(&brushSize, &guiState);
         gui.drawColorPicker(&colorPickerColor, screenHeight);
-        try gui.drawMenubar(&pixels);
+        try gui.drawMenubar(&pixels, &guiState);
         gui.drawGrid(pixelSize, &mouseCell);
         rl.drawFPS(screenWidth - 100, 0);
     }

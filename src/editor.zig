@@ -8,8 +8,8 @@ pub fn isInGrid(cell: *rl.Vector2) bool {
     return cell.*.x > -1 and cell.*.y > -1 and cell.*.x < @as(f32, @floatFromInt(gui.gridWidth)) and cell.*.y < @as(f32, @floatFromInt(gui.gridHeight));
 }
 
-pub fn updatePixels(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, start: *rl.Vector2, color: rl.Color, brushSize: f32) void {
-    const brushSizeAsUsize: usize = @intFromFloat(brushSize);
+pub fn updatePixels(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, start: *rl.Vector2, color: rl.Color, brushSize: i32) void {
+    const brushSizeAsUsize: usize = @intCast(brushSize);
     for (0..brushSizeAsUsize) |i| {
         for (0..brushSizeAsUsize) |j| {
             const pixelsX: usize = @as(usize, @intFromFloat(start.x)) + i;
@@ -37,8 +37,8 @@ pub fn drawAllPixels(pixels: *[gui.gridWidth * gui.gridHeight]rl.Color, pixelSiz
     }
 }
 
-pub fn drawCursor(start: *rl.Vector2, brushSize: f32, pixelSize: i32) void {
-    const brushSizeAsUsize: usize = @intFromFloat(brushSize);
+pub fn drawCursor(start: *rl.Vector2, brushSize: i32, pixelSize: i32) void {
+    const brushSizeAsUsize: usize = @intCast(brushSize);
     for (0..brushSizeAsUsize) |i| {
         for (0..brushSizeAsUsize) |j| {
             const iAsInt: i32 = @intCast(i);
