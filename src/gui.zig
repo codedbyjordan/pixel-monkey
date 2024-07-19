@@ -8,7 +8,7 @@ const mouse = @import("mouse.zig");
 
 pub const GuiState = struct { isBrushInputFocused: bool, showFileDropdown: bool, brushSize: i32, colorPickerColor: rl.Color };
 
-const Grid = struct {
+pub const Grid = struct {
     width: usize,
     height: usize,
     offsetX: i32,
@@ -20,7 +20,7 @@ pub const Gui = struct {
     grid: Grid,
 
     pub fn init() Gui {
-        return Gui{ .state = GuiState{ .isBrushInputFocused = false, .showFileDropdown = false, .brushSize = 1 }, .grid = Grid{ .width = 32, .height = 32, .offsetX = 250, .offsetY = 48 } };
+        return Gui{ .state = GuiState{ .isBrushInputFocused = false, .showFileDropdown = false, .brushSize = 1, .colorPickerColor = Color.empty }, .grid = Grid{ .width = 32, .height = 32, .offsetX = 250, .offsetY = 48 } };
     }
 
     pub fn drawGrid(self: *Gui, mouseCell: *rl.Vector2, pixelSize: i32) void {
@@ -29,7 +29,7 @@ pub const Gui = struct {
         _ = rg.guiGrid(rl.Rectangle.init(self.grid.offsetX, self.grid.offsetY, @floatFromInt(gwAsInt * self.pixelSize), @floatFromInt(ghAsInt * pixelSize)), "Test", @floatFromInt(pixelSize), 1, mouseCell);
     }
 
-    pub fn drawMenubar(self: *Gui, pixels: *[self.gridWidth * self.gridHeight]rl.Color) !void {
+    pub fn drawMenubar(self: *Gui, pixels: *[]rl.Color) !void {
         rl.drawRectangle(0, 0, rl.getScreenWidth(), 32, Color.gray_400);
         if (rg.guiButton(rl.Rectangle.init(0, 0, 64, 32), "File") == 1) {
             self.state.showFileDropdown = !self.state.showFileDropdown;
