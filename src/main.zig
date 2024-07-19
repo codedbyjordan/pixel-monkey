@@ -51,13 +51,13 @@ pub fn main() anyerror!void {
         }
 
         if (editor.isInGrid(&mouseCell, &gui.grid)) {
-            editor.drawCursor(&mouseCell, brushSize, pixelSize, &gui.grid);
+            editor.drawCursor(&mouseCell, gui.state.brushSize, pixelSize, &gui.grid);
         }
 
-        try gui.drawMenubar(&pixels);
         gui.drawBrushSizeInput();
         gui.drawGrid(&mouseCell, pixelSize);
-
+        gui.drawColorPicker(&gui.state.colorPickerColor);
+        try gui.drawMenubar(&pixels);
         editor.drawAllPixels(&pixels, pixelSize, &gui.grid);
         rl.drawFPS(screenWidth - 100, 0);
     }

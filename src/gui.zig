@@ -20,7 +20,7 @@ pub const Gui = struct {
     grid: Grid,
 
     pub fn init() Gui {
-        return Gui{ .state = GuiState{ .isBrushInputFocused = false, .showFileDropdown = false, .brushSize = 1, .colorPickerColor = Color.empty }, .grid = Grid{ .width = 32, .height = 32, .offsetX = 250, .offsetY = 48 } };
+        return Gui{ .state = GuiState{ .isBrushInputFocused = false, .showFileDropdown = false, .brushSize = 1, .colorPickerColor = rl.Color.white }, .grid = Grid{ .width = 32, .height = 32, .offsetX = 250, .offsetY = 48 } };
     }
 
     pub fn drawGrid(self: *Gui, mouseCell: *rl.Vector2, pixelSize: i32) void {
@@ -50,9 +50,10 @@ pub const Gui = struct {
     }
 
     pub fn drawColorPicker(self: *Gui, color: *rl.Color) void {
+        _ = self;
         const colorPickerRect = rl.Rectangle{
             .x = 10,
-            .y = @as(f32, @floatFromInt(self.screenHeight - 110)),
+            .y = @as(f32, @floatFromInt(rl.getScreenHeight() - 110)),
             .width = 100,
             .height = 100,
         };

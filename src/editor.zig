@@ -3,8 +3,7 @@ const rl = @import("raylib");
 const g = @import("gui.zig");
 const Grid = g.Grid;
 const Gui = g.Gui;
-
-const emptyColor = rl.Color.init(0, 0, 0, 0);
+const Color = @import("color.zig").Color;
 
 pub fn isInGrid(cell: *rl.Vector2, grid: *Grid) bool {
     return cell.*.x > -1 and cell.*.y > -1 and cell.*.x < @as(f32, @floatFromInt(grid.width)) and cell.*.y < @as(f32, @floatFromInt(grid.height));
@@ -32,7 +31,7 @@ pub fn drawAllPixels(pixels: *[]rl.Color, pixelSize: i32, grid: *Grid) void {
             const x: i32 = @intCast(i);
             const y: i32 = @intCast(j);
 
-            if (!std.meta.eql(pixels.*[j * grid.width + i], emptyColor)) {
+            if (!std.meta.eql(pixels.*[j * grid.width + i], Color.empty)) {
                 rl.drawRectangle(x * pixelSize + grid.offsetX + 1, y * pixelSize + grid.offsetY + 1, pixelSize - 1, pixelSize - 1, pixels.*[j * grid.width + i]);
             }
         }
