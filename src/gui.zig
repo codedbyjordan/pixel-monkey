@@ -13,6 +13,10 @@ pub const Grid = struct {
     height: usize,
     offsetX: i32,
     offsetY: i32,
+
+    pub fn isMouseInGrid(self: *Grid, cell: *rl.Vector2) bool {
+        return cell.*.x > -1 and cell.*.y > -1 and cell.*.x < @as(f32, @floatFromInt(self.width)) and cell.*.y < @as(f32, @floatFromInt(self.height));
+    }
 };
 
 pub const Gui = struct {

@@ -4,7 +4,7 @@ const rl = @import("raylib");
 const rg = @import("raygui");
 const Gui = @import("gui.zig").Gui;
 const Color = @import("color.zig").Color;
-const editor = @import("editor.zig");
+const Editor = @import("editor.zig").Editor;
 
 const pixelSize: i32 = 12;
 
@@ -36,6 +36,8 @@ pub fn main() anyerror!void {
 
     rl.setTargetFPS(60);
 
+    var editor = Editor{};
+
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
         defer rl.endDrawing();
@@ -44,13 +46,13 @@ pub fn main() anyerror!void {
         screenWidth = rl.getScreenWidth();
         screenHeight = rl.getScreenHeight();
 
-        if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and editor.isInGrid(&mouseCell, &gui.grid)) {
+        if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and gui.grid.isMouseInGrid(&mouseCell)) {
             editor.updatePixels(&pixels, &mouseCell, gui.state.colorPickerColor, &gui);
-        } else if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_right) and editor.isInGrid(&mouseCell, &gui.grid)) {
+        } else if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_right) and gui.grid.isMouseInGrid(&mouseCell)) {
             editor.updatePixels(&pixels, &mouseCell, Color.empty, &gui);
         }
 
-        if (editor.isInGrid(&mouseCell, &gui.grid)) {
+        if (gui.grid.isMouseInGrid(&mouseCell)) {
             editor.drawCursor(&mouseCell, gui.state.brushSize, pixelSize, &gui.grid);
         }
 
