@@ -6,33 +6,71 @@ const std = @import("std");
 const Color = @import("color.zig").Color;
 const mouse = @import("mouse.zig");
 
-pub const gridWidth: usize = 32;
-pub const gridHeight: usize = 32;
+pub const GuiState = struct { isBrushInputFocused: bool, showFileDropdown: bool, brushSize: i32, colorPickerColor: rl.Color };
 
-pub const gridOffsetX: i32 = 250;
-pub const gridOffsetY: i32 = 48;
-
-pub const GuiState = struct {
-    isBrushInputFocused: bool,
-    showFileDropdown: bool,
+const Grid = struct {
+    width: usize,
+    height: usize,
+    offsetX: i32,
+    offsetY: i32,
 };
 
-pub fn drawGrid(pixelSize: i32, mouseCell: *rl.Vector2) void {
-    const gwAsInt: i32 = @intCast(gridWidth);
-    const ghAsInt: i32 = @intCast(gridHeight);
-    _ = rg.guiGrid(rl.Rectangle.init(gridOffsetX, gridOffsetY, @floatFromInt(gwAsInt * pixelSize), @floatFromInt(ghAsInt * pixelSize)), "Test", @floatFromInt(pixelSize), 1, mouseCell);
-}
+pub const Gui = struct {
+    state: GuiState,
+    grid: Grid,
 
-pub fn drawColorPicker(color: *rl.Color, screenHeight: i32) void {
-    const colorPickerRect = rl.Rectangle{
-        .x = 10,
-        .y = @as(f32, @floatFromInt(screenHeight - 110)),
-        .width = 100,
-        .height = 100,
-    };
+    pub fn init() Gui {
+        return Gui{ .state = GuiState{ .isBrushInputFocused = false, .showFileDropdown = false, .brushSize = 1 }, .grid = Grid{ .width = 32, .height = 32, .offsetX = 250, .offsetY = 48 } };
+    }
 
-    _ = rg.guiColorPicker(colorPickerRect, "Select color", color);
-}
+    pub fn drawGrid(self: *Gui, mouseCell: *rl.Vector2, pixelSize: i32) void {
+        const gwAsInt: i32 = @intCast(self.grid.width);
+        const ghAsInt: i32 = @intCast(self.grid.height);
+        _ = rg.guiGrid(rl.Rectangle.init(self.grid.offsetX, self.grid.offsetY, @floatFromInt(gwAsInt * self.pixelSize), @floatFromInt(ghAsInt * pixelSize)), "Test", @floatFromInt(pixelSize), 1, mouseCell);
+    }
+
+    pub fn drawMenubar(self: *Gui, pixels: *[self.gridWidth * self.gridHeight]rl.Color) !void {
+        rl.drawRectangle(0, 0, rl.getScreenWidth(), 32, Color.gray_400);
+        if (rg.guiButton(rl.Rectangle.init(0, 0, 64, 32), "File") == 1) {
+            self.state.showFileDropdown = !self.state.showFileDropdown;
+        }
+
+        if (self.state.showFileDropdown) {
+            const saveBtnRect = rl.Rectangle.init(0, 32 - 2, 72, 32);
+            if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and !mouse.isMouseClickInBounds(saveBtnRect)) {
+                self.state.showFileDropdown = false;
+            } else if (rg.guiButton(saveBtnRect, "Save") == 1) {
+                const result = try openSaveDialog("png", null);
+                if (result) |path| {
+                    try images.saveImage(pixels, path);
+                }
+            }
+        }
+    }
+
+    pub fn drawColorPicker(self: *Gui, color: *rl.Color) void {
+        const colorPickerRect = rl.Rectangle{
+            .x = 10,
+            .y = @as(f32, @floatFromInt(self.screenHeight - 110)),
+            .width = 100,
+            .height = 100,
+        };
+
+        _ = rg.guiColorPicker(colorPickerRect, "Select color", color);
+    }
+
+    pub fn drawBrushSizeInput(self: *Gui) void {
+        const bounds = rl.Rectangle.init(52, 48, 64, 24);
+        _ = rg.guiValueBox(bounds, "Brush size", self.state.brushSize, 1, 10, self.state.isBrushInputFocused);
+        if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left)) {
+            if (mouse.isMouseClickInBounds(bounds)) {
+                self.state.isBrushInputFocused = true;
+            } else if (!mouse.isMouseClickInBounds(bounds)) {
+                self.state.isBrushInputFocused = false;
+            }
+        }
+    }
+};
 
 // fn drawIconButton(icon: rg.GuiIconName, pixelSize: i32, posX: i32, posY: i32, color: rl.Color) i32 {
 //     const iconId: i32 = @intCast(@intFromEnum((icon)));
@@ -54,34 +92,3 @@ pub fn drawColorPicker(color: *rl.Color, screenHeight: i32) void {
 //     }
 //     return 0;
 // }
-
-pub fn drawMenubar(pixels: *[gridWidth * gridHeight]rl.Color, guiState: *GuiState) !void {
-    rl.drawRectangle(0, 0, rl.getScreenWidth(), 32, Color.gray_400);
-    if (rg.guiButton(rl.Rectangle.init(0, 0, 64, 32), "File") == 1) {
-        guiState.showFileDropdown = !guiState.showFileDropdown;
-    }
-
-    if (guiState.showFileDropdown) {
-        const saveBtnRect = rl.Rectangle.init(0, 32 - 2, 72, 32);
-        if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and !mouse.isMouseClickInBounds(saveBtnRect)) {
-            guiState.showFileDropdown = false;
-        } else if (rg.guiButton(saveBtnRect, "Save") == 1) {
-            const result = try openSaveDialog("png", null);
-            if (result) |path| {
-                try images.saveImage(pixels, path);
-            }
-        }
-    }
-}
-
-pub fn drawBrushSizeInput(brushSize: *i32, guiState: *GuiState) void {
-    const bounds = rl.Rectangle.init(4, 48, 64, 24);
-    _ = rg.guiValueBox(bounds, "Brush size", brushSize, 1, 10, guiState.isBrushInputFocused);
-    if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left)) {
-        if (mouse.isMouseClickInBounds(bounds)) {
-            guiState.isBrushInputFocused = true;
-        } else if (!mouse.isMouseClickInBounds(bounds)) {
-            guiState.isBrushInputFocused = false;
-        }
-    }
-}

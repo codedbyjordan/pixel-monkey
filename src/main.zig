@@ -2,7 +2,7 @@ const std = @import("std");
 const print = std.debug.print;
 const rl = @import("raylib");
 const rg = @import("raygui");
-const gui = @import("gui.zig");
+const Gui = @import("gui.zig").Gui;
 const editor = @import("editor.zig");
 
 const pixelSize: i32 = 12;
@@ -15,12 +15,11 @@ var mouseCell = rl.Vector2.init(0, 0);
 pub fn main() anyerror!void {
     var screenWidth: i32 = 800;
     var screenHeight: i32 = 450;
-
-    var colorPickerColor = rl.Color.red;
-    var pixels: [gui.gridWidth * gui.gridHeight]rl.Color = undefined;
+    const gui = Gui.init();
+    var pixels: [gui.grid.width * gui.grid.height]rl.Color = undefined;
 
     var i: usize = 0;
-    while (i < gui.gridWidth * gui.gridHeight) : (i += 1) {
+    while (i < gui.grid.width * gui.grid.height) : (i += 1) {
         pixels[i] = emptyColor;
     }
 
@@ -28,8 +27,6 @@ pub fn main() anyerror!void {
     defer rl.closeWindow();
 
     rl.setTargetFPS(60);
-
-    var guiState = gui.GuiState{ .isBrushInputFocused = false, .showFileDropdown = false };
 
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
@@ -40,7 +37,7 @@ pub fn main() anyerror!void {
         screenHeight = rl.getScreenHeight();
 
         if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_left) and editor.isInGrid(&mouseCell)) {
-            editor.updatePixels(&pixels, &mouseCell, colorPickerColor, brushSize);
+            editor.updatePixels(&pixels, &mouseCell, gui.state.colorPickerColor, brushSize);
         } else if (rl.isMouseButtonDown(rl.MouseButton.mouse_button_right) and editor.isInGrid(&mouseCell)) {
             editor.updatePixels(&pixels, &mouseCell, emptyColor, brushSize);
         }
@@ -50,10 +47,6 @@ pub fn main() anyerror!void {
         }
 
         editor.drawAllPixels(&pixels, pixelSize);
-        gui.drawBrushSizeInput(&brushSize, &guiState);
-        gui.drawColorPicker(&colorPickerColor, screenHeight);
-        try gui.drawMenubar(&pixels, &guiState);
-        gui.drawGrid(pixelSize, &mouseCell);
         rl.drawFPS(screenWidth - 100, 0);
     }
 }
